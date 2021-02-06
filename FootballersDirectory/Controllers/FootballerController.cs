@@ -21,9 +21,8 @@ namespace FootballersDirectory.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> AllFootballers()
+        public IActionResult AllFootballers()
         {
-            var footballers = await database.Footballers.ToListAsync();
             var model = from footballer in database.Footballers
                         join team in database.Teams
                           on footballer.TeamId equals team.Id
@@ -46,7 +45,7 @@ namespace FootballersDirectory.Controllers
         {
             var model = new AddFootballerViewModel();
 
-            model.Teams = await database.Teams.Select(r => new SelectListItem { Text = r.Name, Value = r.Id.ToString() }).Distinct().ToListAsync();
+            model.Teams = await database.SelectedTeams();
 
             return View(model);
         }
@@ -56,8 +55,7 @@ namespace FootballersDirectory.Controllers
         [HttpPost]
         public async Task<IActionResult> AddFootballer(AddFootballerViewModel model)
         {
-            model.Teams = await database.Teams.
-                Select(r => new SelectListItem { Text = r.Name, Value = r.Id.ToString() }).Distinct().ToListAsync();
+            model.Teams = await database.SelectedTeams();
 
             if (ModelState.IsValid)
             {
@@ -104,7 +102,7 @@ namespace FootballersDirectory.Controllers
         [HttpGet]
         public async Task<IActionResult> EditFootballer(int footballerId)
         {
-            var footballer = await database.Footballers.FirstOrDefaultAsync(r => r.Id == footballerId);
+            var footballer = await database.GetFootballerById(footballerId);
             var model = new EditFootballerViewModel
             {
                 Id = footballer.Id,
@@ -116,8 +114,7 @@ namespace FootballersDirectory.Controllers
                 Country = footballer.Country
             };
 
-            model.Teams = await database.Teams.
-                Select(r => new SelectListItem { Text = r.Name, Value = r.Id.ToString() }).Distinct().ToListAsync();
+            model.Teams = await database.SelectedTeams();
 
             return View(model);
         }
@@ -125,12 +122,11 @@ namespace FootballersDirectory.Controllers
         [HttpPost]
         public async Task<IActionResult> EditFootballer(EditFootballerViewModel model)
         {
-            model.Teams = await database.Teams.
-                    Select(r => new SelectListItem { Text = r.Name, Value = r.Id.ToString() }).Distinct().ToListAsync();
+            model.Teams = await database.SelectedTeams();
 
             if (ModelState.IsValid)
             {
-                var footballer = await database.Footballers.FirstOrDefaultAsync(r => r.Id == model.Id);
+                var footballer = await database.GetFootballerById(model.Id);
                 if (footballer != null)
                 {
                     footballer.FirstName = model.FirstName;

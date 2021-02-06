@@ -50,7 +50,9 @@
 
                 <div class="col-sm-6">
                     <label asp-for="SelectTeam" class="form-label"></label>
-                    <select name="SelectTeam" asp-items="Model.Teams" class="form-select"></select>
+                    <select name="SelectTeam" asp-items="Model.Teams" class="form-select">
+                        <option selected=""></option>
+                    </select>
                 </div>
 
                 <div class="col-sm-6">

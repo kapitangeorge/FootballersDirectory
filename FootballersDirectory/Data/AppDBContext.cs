@@ -1,4 +1,5 @@
 ﻿using FootballersDirectory.Data.Models;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
@@ -21,5 +22,11 @@ namespace FootballersDirectory.Data
             await Teams.AddAsync(team);
             await SaveChangesAsync();
         }
+
+        public async Task<IEnumerable<SelectListItem>> SelectedTeams() 
+            => await Teams.Select(r => new SelectListItem { Text = r.Name, Value = r.Id.ToString() }).Distinct().ToListAsync();
+
+        public async Task<Footballer> GetFootballerById(int id) => await Footballers.FirstOrDefaultAsync(r => r.Id == id);
+
     }
 }
